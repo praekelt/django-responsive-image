@@ -1,0 +1,7 @@
+Changelog
+=========
+
+next
+-----
+#. First release.
+

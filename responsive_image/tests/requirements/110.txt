@@ -1,0 +1,4 @@
+django==1.10
+requests==2.10.0
+django-test-without-migrations==0.4
+django-crum==0.7.1
