@@ -33,4 +33,4 @@ SECRET_KEY = "SECRET_KEY"
 
 STATIC_URL = "/"
 MEDIA_URL = "/"
-
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
