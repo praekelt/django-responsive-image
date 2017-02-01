@@ -28,7 +28,8 @@ class TemplateTagsTestCase(TestCase):
         super(TemplateTagsTestCase, cls).setUpTestData()
 
         # Clean the media root
-        rmtree(settings.MEDIA_ROOT)
+        if os.path.exists(settings.MEDIA_ROOT):
+            rmtree(settings.MEDIA_ROOT)
 
         # Create test object
         cls.obj = MyModel.objects.create()
