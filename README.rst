@@ -52,9 +52,9 @@ Yields::
     </noscript>
 
 
-Static image with no lazy loading::
+ImageModel (sub)object with no lazy loading::
 
-    {% picture "images/foo.png" "640,320x240" "detail,thumb" %}
+    {% picture object "640,320x240" "detail,thumb" %}
 
 Yields::
 
