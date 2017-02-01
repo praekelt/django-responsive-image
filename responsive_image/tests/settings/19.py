@@ -22,6 +22,7 @@ ROOT_URLCONF = "responsive_image.tests.urls"
 INSTALLED_APPS = (
     "responsive_image",
     "responsive_image.tests",
+    "photologue",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sites",
@@ -31,3 +32,5 @@ INSTALLED_APPS = (
 SECRET_KEY = "SECRET_KEY"
 
 STATIC_URL = "/"
+MEDIA_URL = "/"
+

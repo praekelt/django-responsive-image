@@ -8,7 +8,7 @@
     {% if srcsets %}
     <source data-srcset="
     {% for srcset in srcsets %}
-        {{ canonical_url_name }}-{{srcset.width }}{% if srcset.height %}x{{ srcset.height }}{% endif %}.{{ canonical_url_extension }}{% if not forloop.last %}, {% endif %}
+        {{ srcset.url }} {{ srcset.wh }}{% if not forloop.last %}, {% endif %}
     {% endfor %}
     "
     />
@@ -29,7 +29,7 @@
             {% if srcsets %}
             srcset="
             {% for srcset in srcsets %}
-                {{ canonical_url_name }}-{{srcset.width }}{% if srcset.height %}x{{ srcset.height }}{% endif %}.{{ canonical_url_extension }}{% if not forloop.last %}, {% endif %}
+                {{ srcset.url }} {{ srcset.wh }}{% if not forloop.last %}, {% endif %}
             {% endfor %}
             "
         {% endif %}
@@ -44,7 +44,7 @@
         {% if srcsets %}
         srcset="
         {% for srcset in srcsets %}
-            {{ canonical_url_name }}-{{srcset.width }}{% if srcset.height %}x{{ srcset.height }}{% endif %}.{{ canonical_url_extension }}{% if not forloop.last %}, {% endif %}
+            {{ srcset.url }} {{ srcset.wh }}{% if not forloop.last %}, {% endif %}
         {% endfor %}
         "
         {% endif %}

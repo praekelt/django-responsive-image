@@ -1,5 +1,6 @@
 from django import template
 from django.conf import settings
+from django.db.models import Model
 from django.template.loader import render_to_string
 
 
@@ -56,22 +57,38 @@ class PictureNode(template.Node):
         srcsets = []
         for part in sizes.split(","):
             li = part.split("x")
-            di = {"width": li[0], "height": 0}
+            di = {"width": li[0], "height": ""}
             if len(li) > 1:
                 di["height"] = li[1]
+            di["wh"] = di["width"] + "w"
+            if di["height"]:
+                di["wh"] = di["wh"] + " " + di["height"] + "h"
             srcsets.append(di)
 
         # Set URLs and object
         obj = None
+
+        # Static image has a naming convention
         if isinstance(object_or_path, basestring):
-            canonical_url = "%s%s" % (settings.STATIC_URL, object_or_path)
+            canonical_url = settings.STATIC_URL + object_or_path
+            name, extension = canonical_url.rsplit(".", 1)
             for di in srcsets:
-                url = "%s-%s" % (object_or_path, di["width"])
+                url = "%s-%s" % (name, di["width"])
                 if di["height"]:
-                    url = "%s%sx%s" % (settings.STATIC_URL, url, di["height"])
-        elif isinstance(object_or_path, models.Model):
+                    url = url + "x" + di["height"]
+                url = url + "." + extension
+                di["url"] = url
+
+        # Photologue ImageModel (sub)object follows photologue names
+        elif isinstance(object_or_path, Model):
             obj = object_or_path
             canonical_url = obj.image.url
+            name, extension = canonical_url.rsplit(".", 1)
+
+            for di, size_name in zip(srcsets, size_names.split(",")):
+                url = getattr(obj, "get_%s_url" % size_name)()
+                di["url"] = url
+
         else:
             raise RuntimeError, "object_or_path has invalid type"
 
@@ -81,8 +98,6 @@ class PictureNode(template.Node):
             {
                 "object": obj,
                 "canonical_url": canonical_url,
-                "canonical_url_name": canonical_url_name,
-                "canonical_url_extension": canonical_url_extension,
                 "srcsets": srcsets,
                 "lazy": lazy
             }
