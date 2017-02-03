@@ -4,35 +4,39 @@
 
      <!--[if IE 9]><video style="display: none;"><![endif]-->
 
-    {% if lazy %}
     {% if srcsets %}
-    <source data-srcset="
-    {% for srcset in srcsets %}
-        {{ srcset.url }} {{ srcset.wh }}{% if not forloop.last %}, {% endif %}
-    {% endfor %}
-    "
-    />
-    {% endif %}
+        {% if lazy %}
+            <!--lazy-->
+            {{ srcsets }}
+            <source data-srcset="
+            {% for srcset in srcsets %}
+                {{ srcset.url }} {{ srcset.wh }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            "
+            />
+        {% else %}
+            <!--not-lazy-->
+            <source srcset="
+            {% for srcset in srcsets %}
+                {{ srcset.url }} {{ srcset.wh }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            "
+            />
+        {% endif %}
     {% endif %}
 
     <!--[if IE 9]></video><![endif]-->
 
     {% if lazy %}
-        <img class="Picture-image{% if object_fit %} Picture--{{ object_fit }}{% endif %} lazyload"
+        <img class="Picture-image{% if classes %} {{ classes }}{% endif %} lazyload"
              srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
              data-sizes="auto"
-             alt="{% if object %}{{ object }}{% else %}{% trans "Responsive image" %}{% endif %}"
+             alt="{% if object %}{{ object }}{% else %}{% trans 'Responsive image' %}{% endif %}"
          />
     {% else %}
-        <img src="{{ canonical_url}}"
-            {% if object %}alt="{{ object }}"{% endif %}
-            {% if srcsets %}
-            srcset="
-            {% for srcset in srcsets %}
-                {{ srcset.url }} {{ srcset.wh }}{% if not forloop.last %}, {% endif %}
-            {% endfor %}
-            "
-        {% endif %}
+        <img class="Picture-image{% if classes %} {{ classes }}{% endif %}"
+             src="{{ canonical_url }}"
+             {% if object %}alt="{{ object }}"{% endif %}
         />
     {% endif %}
 

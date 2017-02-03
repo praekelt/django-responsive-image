@@ -10,28 +10,30 @@ register = template.Library()
 @register.tag
 def picture(parser, token):
     tokens = token.split_contents()
-    if len(tokens) < 3:
+    if len(tokens) < 2:
         raise template.TemplateSyntaxError(
-            """{% picture path "W,WxH,..." [lazy=bool] %}
+            """{% picture path "W,WxH,..." [classes="className"] [lazy=bool] %}
             or
-            {% picture object "W,WxH,..." "thumb,detail" [lazy=bool] %}
+            {% picture object "W,WxH,..." "thumb,detail" [classes="className"] [lazy=bool] %}
             """
         )
 
-    # Some inelegant parsing
-    kwargs = {"lazy": None}
-    if "lazy=" in tokens[-1]:
-        kwargs["lazy"] = tokens[-1].split("=")[1]
-        args = tokens[1:-1]
-    else:
-        args = tokens[1:]
+    # Some parsing
+    parsed_args = []
+    parsed_kwargs = {}
+    for token in tokens[1:]:
+        if '='in token:
+            k, v = token.split('=')
+            parsed_kwargs[k] = v
+        else:
+            parsed_args.append(token)
 
-    return PictureNode(*args, **kwargs)
+    return PictureNode(*parsed_args, **parsed_kwargs)
 
 
 class PictureNode(template.Node):
 
-    def __init__(self, object_or_path, sizes, size_names=None, object_fit=None, lazy=None):
+    def __init__(self, object_or_path, sizes, size_names=None, classes=None, lazy=None):
         self.object_or_path = template.Variable(object_or_path)
         self.sizes = template.Variable(sizes)
         self.size_names = None
@@ -40,9 +42,9 @@ class PictureNode(template.Node):
         self.lazy = None
         if lazy is not None:
             self.lazy = template.Variable(lazy)
-        self.object_fit = None
-        if object_fit is not None:
-            self.object_fit = template.Variable(object_fit)
+        self.classes = None
+        if classes is not None:
+            self.classes = template.Variable(classes)
 
     def render(self, context):
         object_or_path = self.object_or_path.resolve(context)
@@ -55,10 +57,10 @@ class PictureNode(template.Node):
             lazy = self.lazy.resolve(context)
         else:
             lazy = False
-        if self.object_fit is not None:
-            object_fit = self.object_fit.resolve(context)
+        if self.classes is not None:
+            classes = self.classes.resolve(context)
         else:
-            object_fit = ""
+            classes = ""
 
         # Parse sizes. Let errors propagate.
         srcsets = []
@@ -92,15 +94,25 @@ class PictureNode(template.Node):
             canonical_url = obj.image.url
             name, extension = canonical_url.rsplit(".", 1)
 
-            try:
-                for di, size_name in zip(srcsets, size_names.split(",")):
-                    url = getattr(obj, "get_%s_url" % size_name)()
+        # @hedley
+        # Alternative solutions for this block:
+        # only return pairs that have both values,
+        # or only ask for photologue sizes if objects and get the dimensions from photologue?
+            sizes = size_names.split(",")
+            if len(sizes) == len(srcsets):
+                for di, size_name in zip(srcsets, sizes):
+                    url = getattr(obj, "get_%s_url" % size_name, None)
+                    if url is None:
+                        raise template.TemplateSyntaxError(
+                            'The photo size  "%s" has not been defined in '
+                            'photologue.photo_sizes.' % str(size_name)
+                        )
                     di["url"] = url
-            except AttributeError:
+            else:
                 raise template.TemplateSyntaxError(
-                    "The sizes_name arguments values have probably not been defined in Photologue sizes"
-                )
-
+                        "equal size_names to srcsets arg values required "
+                        "when using ImageModel value for object_or_path"
+                    )
 
         else:
             raise RuntimeError, "object_or_path has invalid type"
@@ -113,6 +125,6 @@ class PictureNode(template.Node):
                 "canonical_url": canonical_url,
                 "srcsets": srcsets,
                 "lazy": lazy,
-                "object_fit": object_fit
+                "classes": classes
             }
         )
