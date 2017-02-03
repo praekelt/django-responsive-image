@@ -35,17 +35,19 @@ Static image with no lazy loading::
 
 Yields::
 
-    <picture class="Picture Picture--cover">
+    <picture class="Picture">
         <!--[if IE 9]><video style="display: none;"><![endif]-->
         <!--[if IE 9]></video><![endif]-->
-        <img src="/images/static-non-lazy.png"
-             srcset="/images/static-non-lazy-640.png 640w,
-                     /images/static-non-lazy-320x240.png 320w 240h"
+        <img class="Picture-image"
+             src="/images/static-non-lazy.png"
+             srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+             data-sizes="auto"
         />
     </picture>
 
     <noscript>
-        <img src="/images/static-non-lazy.png"
+        <img class="Picture-image"
+             src="/images/static-non-lazy.png"
              srcset="/images/static-non-lazy-640.png 640w,
                      /images/static-non-lazy-320x240.png 320w 240h"
         />
@@ -58,20 +60,20 @@ ImageModel (sub)object with no lazy loading::
 
 Yields::
 
-    <picture class="Picture Picture--cover">
+    <picture class="Picture">
         <!--[if IE 9]><video style="display: none;"><![endif]-->
         <!--[if IE 9]></video><![endif]-->
-        <img src="/photologue/photos/image_FBqACfc.jpg"
-            alt="MyModel object"
-            srcset="/photologue/photos/cache/image_FBqACfc_detail.jpg 640w,
-                    /photologue/photos/cache/image_FBqACfc_thumb.jpg 320w 240h"
+        <img class="Picture-image"
+             srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+             data-sizes="auto"
+             alt="MyModel object"
         />
     </picture>
 
     <noscript>
-        <img src="/photologue/photos/image_FBqACfc.jpg"
-            alt="MyModel object"
-            srcset="/photologue/photos/cache/image_FBqACfc_detail.jpg 640w,
+        <img class="Picture-image"
+             alt="MyModel object"
+             srcset="/photologue/photos/cache/image_FBqACfc_detail.jpg 640w,
                     /photologue/photos/cache/image_FBqACfc_thumb.jpg 320w 240h"
         />
     </noscript>
@@ -82,5 +84,6 @@ Template tag arguments
     * object_or_path - ImageModel (sub(object or path to a static file
     * sizes - comma delimited string of viewport sizes of the form WxH,W. H is optional.
     * size_names - comma delimited string of Photologue Size names that correspond to the viewport sizes. Required if object_or_path is an object.
+    * classes - additional classes to inject on the ``<img>`` after the ``.Picture-image`` class.
     * lazy - boolean indicating whether the picture is lazily loaded. Default to false.
 

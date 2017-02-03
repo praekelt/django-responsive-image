@@ -7,7 +7,6 @@
     {% if srcsets %}
         {% if lazy %}
             <!--lazy-->
-            {{ srcsets }}
             <source data-srcset="
             {% for srcset in srcsets %}
                 {{ srcset.url }} {{ srcset.wh }}{% if not forloop.last %}, {% endif %}
