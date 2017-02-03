@@ -10,7 +10,7 @@ register = template.Library()
 @register.tag
 def picture(parser, token):
     tokens = token.split_contents()
-    if len(tokens) < 2:
+    if len(tokens) < 3:
         raise template.TemplateSyntaxError(
             """{% picture path "W,WxH,..." [lazy=bool] %}
             or
@@ -31,7 +31,7 @@ def picture(parser, token):
 
 class PictureNode(template.Node):
 
-    def __init__(self, object_or_path, sizes, size_names=None, lazy=None):
+    def __init__(self, object_or_path, sizes, size_names=None, object_fit=None, lazy=None):
         self.object_or_path = template.Variable(object_or_path)
         self.sizes = template.Variable(sizes)
         self.size_names = None
@@ -40,6 +40,9 @@ class PictureNode(template.Node):
         self.lazy = None
         if lazy is not None:
             self.lazy = template.Variable(lazy)
+        self.object_fit = None
+        if object_fit is not None:
+            self.object_fit = template.Variable(object_fit)
 
     def render(self, context):
         object_or_path = self.object_or_path.resolve(context)
@@ -52,6 +55,10 @@ class PictureNode(template.Node):
             lazy = self.lazy.resolve(context)
         else:
             lazy = False
+        if self.object_fit is not None:
+            object_fit = self.object_fit.resolve(context)
+        else:
+            object_fit = ""
 
         # Parse sizes. Let errors propagate.
         srcsets = []
@@ -85,9 +92,15 @@ class PictureNode(template.Node):
             canonical_url = obj.image.url
             name, extension = canonical_url.rsplit(".", 1)
 
-            for di, size_name in zip(srcsets, size_names.split(",")):
-                url = getattr(obj, "get_%s_url" % size_name)()
-                di["url"] = url
+            try:
+                for di, size_name in zip(srcsets, size_names.split(",")):
+                    url = getattr(obj, "get_%s_url" % size_name)()
+                    di["url"] = url
+            except AttributeError:
+                raise template.TemplateSyntaxError(
+                    "The sizes_name arguments values have probably not been defined in Photologue sizes"
+                )
+
 
         else:
             raise RuntimeError, "object_or_path has invalid type"
@@ -99,6 +112,7 @@ class PictureNode(template.Node):
                 "object": obj,
                 "canonical_url": canonical_url,
                 "srcsets": srcsets,
-                "lazy": lazy
+                "lazy": lazy,
+                "object_fit": object_fit
             }
         )
