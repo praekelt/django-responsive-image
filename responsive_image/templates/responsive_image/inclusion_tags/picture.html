@@ -21,7 +21,7 @@
     <!--[if IE 9]></video><![endif]-->
 
     {% if lazy %}
-        <img class="Picture-image lazyautosizes lazyloaded"
+        <img class="Picture-image {% if classes %}{{ classes }}{% endif %} lazyautosizes lazyloaded"
              srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
              data-sizes="auto"
              alt="{% if object %}{{ object }}{% else %}{% trans "Responsive image" %}{% endif %}"

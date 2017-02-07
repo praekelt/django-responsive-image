@@ -19,6 +19,7 @@ def picture(parser, token):
                   "W,WxH;W,WxH..."
                   [breakpoints=768,2014...]
                   [lazy=bool]
+                  [classes=css-cls-1 css-cls-2]
                %}
             or
             {% picture object
@@ -26,6 +27,7 @@ def picture(parser, token):
                size_names="thumb,detail;hres,lres..."
                breakpoints=768,1024,...]
                [lazy=bool]
+               [classes=css-cls-1 css-cls-2]
             %}
             """
         )
@@ -126,6 +128,7 @@ class PictureNode(template.Node):
                 "canonical_url": canonical_url,
                 "sources": sources,
                 "srcsets": srcsets,
-                "lazy": resolved.get("lazy", False)
+                "lazy": resolved.get("lazy", False),
+                "classes": resolved.get("classes", False)
             }
         )

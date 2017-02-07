@@ -74,9 +74,6 @@ class TemplateTagsTestCase(TestCase):
             {% picture "images/static-non-lazy.png" "640,320x240;1024" breakpoints="640,1024" lazy=True %}"""
         )
         result = t.render(template.Context({}))
-        fp = open("/tmp/a.txt", "w")
-        fp.write(result)
-        fp.close()
         self.failUnless("<source data-srcset=" in result)
         self.failUnless("/images/static-non-lazy-640.png 640w" in result)
         self.failUnless("/images/static-non-lazy-320x240.png 320w 240h" in result)
@@ -89,10 +86,6 @@ class TemplateTagsTestCase(TestCase):
             {% picture object "640,320x240;1024" breakpoints="640,1024" size_names="detail,thumb;retina" lazy=True %}"""
         )
         result = t.render(template.Context({"object": self.obj}))
-        fp = open("/tmp/b.txt", "w")
-        fp.write(result)
-        fp.close()
-
         self.failUnless("<source data-srcset=" in result)
         self.failUnless("/photologue/photos/cache/image_detail.jpg 640w" in result)
         self.failUnless("/photologue/photos/cache/image_thumb.jpg 320w 240h" in result)
