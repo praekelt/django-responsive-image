@@ -5,14 +5,17 @@
      <!--[if IE 9]><video style="display: none;"><![endif]-->
 
     {% if lazy %}
-    {% if srcsets %}
-    <source data-srcset="
-    {% for srcset in srcsets %}
-        {{ srcset.url }} {{ srcset.wh }}{% if not forloop.last %}, {% endif %}
+    {% for source in sources %}
+        <source data-srcset="
+        {% for di in source.srcset %}
+            {{ di.url }} {{ di.wh }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+        "
+        {% if source.breakpoint %}
+            media="(min-width: {{ source.breakpoint }}px)"
+        {% endif %}
+        />
     {% endfor %}
-    "
-    />
-    {% endif %}
     {% endif %}
 
     <!--[if IE 9]></video><![endif]-->

@@ -30,5 +30,21 @@
             "pre_cache": false,
             "quality": 70
         }
+    },
+    {
+        "pk": null,
+        "model": "photologue.photosize",
+        "fields": {
+            "name": "retina",
+            "watermark": null,
+            "increment_count": false,
+            "effect": null,
+            "crop": true,
+            "height": 768,
+            "width": 1024,
+            "upscale": true,
+            "pre_cache": false,
+            "quality": 70
+        }
     }
 ]
